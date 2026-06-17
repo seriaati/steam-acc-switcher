@@ -25,9 +25,26 @@ You need to have logged into each account at least once with "Remember password"
 
 Requires Python 3.10+.
 
+The easiest way is to install it as an isolated CLI tool, which puts `sas` and
+`steam-acc-switcher` on your PATH:
+
 ```bash
-pip install -r requirements.txt
-# or, to get a `steam-switch` command on your PATH:
+# with uv (https://docs.astral.sh/uv/)
+uv tool install steam-acc-switcher
+
+# or with pipx
+pipx install steam-acc-switcher
+```
+
+To install with plain `pip` instead:
+
+```bash
+pip install steam-acc-switcher
+```
+
+Or from a local checkout of this repo:
+
+```bash
 pip install .
 ```
 
@@ -35,7 +52,7 @@ pip install .
 
 ```bash
 # Run with no arguments for the interactive picker. Your saved accounts are
-# listed (active one starred) — use ↑/↓ to move, Enter to switch, q to cancel.
+# listed (active one starred), use ↑/↓ to move, Enter to switch, q to cancel.
 sas
 
 # Enrich the menu with online state / VAC status (public profile lookup).
