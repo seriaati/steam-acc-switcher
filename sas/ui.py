@@ -183,7 +183,7 @@ def _rename(acc: Account) -> None:
     current = acc.nickname or ""
     shown = f" [dim](current: {current})[/]" if current else ""
     console.print(f"Nickname for [bold]{acc.account_name}[/]{shown} [dim](blank to clear):[/]")
-    new = Prompt.ask("  nickname", default=current, show_default=False).strip()
+    new = Prompt.ask("  nickname", default="", show_default=False).strip()
     acc.nickname = new or None
     save_nickname(acc.steamid64, acc.nickname)
 
