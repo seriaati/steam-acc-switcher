@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create release and publish to PyPI
-        uses: seriaati/create-release@v1.0.0
+        uses: seriaati/create-release@v1.0.1
         with:
           pypi_token: ${{ secrets.PYPI_TOKEN }}
           tool: uv
