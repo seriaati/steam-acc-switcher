@@ -1,0 +1,22 @@
+[project]
+name = "steam-acc-switcher"
+version = "0.1.0"
+description = "Switch between saved Steam accounts on Linux."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["readchar>=4.2.2", "rich>=13.0", "vdf>=3.4"]
+license = { file = "LICENSE" }
+
+[project.scripts]
+sas = "sas:main"
+steam-acc-switcher = "sas:main"
+
+[build-system]
+requires = ["uv_build>=0.11.21,<0.12"]
+build-backend = "uv_build"
+
+# The package lives at the repo root as `sas/` rather than uv_build's default
+# `src/<project_name>/` layout, so point module discovery at the root.
+[tool.uv.build-backend]
+module-name = "sas"
+module-root = ""
