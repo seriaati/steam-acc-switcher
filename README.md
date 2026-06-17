@@ -1,8 +1,12 @@
 # steam-acc-switcher
 
-A small CLI for switching between your saved Steam accounts on Linux, built with [`rich`](https://github.com/Textualize/rich) for a clean terminal UI.
+A small CLI for switching between your saved Steam accounts on Linux.
 
 It works the way Steam actually works on Linux: it edits the two plain-text VDF files Steam reads at startup to decide who to auto-login as. It doesn't touch passwords or 2FA.
+
+## Why
+
+Because I have too many Steam accounts for playing Yugioh and Steam's own account picker only shows 5 accounts.
 
 ## How it works
 
