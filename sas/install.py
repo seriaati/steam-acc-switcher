@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
+from sas.console import debug
 from sas.errors import SteamError
 
 _ROOT_CANDIDATES: list[tuple[str, str]] = [
@@ -53,7 +54,9 @@ def detect_install() -> SteamInstall:
         candidate = Path(raw).expanduser()
         if candidate.is_dir():
             root, kind = candidate, k
+            debug(f"steam root: {candidate} ({k})")
             break
+        debug(f"no steam root at {candidate}")
     if root is None:
         raise SteamError(
             "Could not find a Steam installation. Looked for native, Flatpak "
@@ -66,8 +69,13 @@ def detect_install() -> SteamInstall:
         if candidate.is_file():
             registry = candidate
             break
+        debug(f"no registry at {candidate}")
     if registry is None:
         registry = Path("~/.steam/registry.vdf").expanduser()
+        debug(f"no existing registry.vdf found, will create {registry}")
+    else:
+        debug(f"registry: {registry}")
+    debug(f"loginusers: {root / 'config' / 'loginusers.vdf'}")
 
     return SteamInstall(
         root=root,

@@ -8,7 +8,7 @@ from rich.panel import Panel
 
 from sas.accounts import load_login_users
 from sas.commands import run
-from sas.console import err_console
+from sas.console import err_console, set_verbose
 from sas.errors import SteamError
 from sas.install import detect_install
 
@@ -30,11 +30,16 @@ def build_parser() -> argparse.ArgumentParser:
         "-o", "--online", action="store_true",
         help="Show online state / VAC status in the menu (needs network).",
     )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true",
+        help="Print debug details (detected paths, commands run, files written).",
+    )
     return parser
 
 
 def main(argv: Optional[list[str]] = None) -> int:
     args = build_parser().parse_args(argv)
+    set_verbose(args.verbose)
     try:
         install = detect_install()
         login = load_login_users(install.loginusers)

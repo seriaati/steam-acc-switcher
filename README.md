@@ -67,6 +67,9 @@ sas alice
 
 # Skip confirmation prompts.
 sas alice --yes
+
+# Verbose output for debugging.
+sas alice --verbose
 ```
 
 In the interactive picker, press `r` to give the highlighted account a nickname

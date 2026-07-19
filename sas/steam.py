@@ -10,7 +10,7 @@ from typing import Any
 import vdf
 
 from sas.accounts import Account, LoginUsers
-from sas.console import console
+from sas.console import console, debug, is_verbose
 from sas.errors import SteamError
 from sas.install import SteamInstall
 from sas.vdf_utils import ci_lookup, ci_set
@@ -30,8 +30,10 @@ def steam_is_running() -> bool:
 
 def shutdown_steam(install: SteamInstall) -> None:
     if not steam_is_running():
+        debug("steam is not running, nothing to shut down")
         return
 
+    debug(f"shutting down steam: {' '.join(install.shutdown_cmd)}")
     try:
         subprocess.run(
             install.shutdown_cmd,
@@ -44,7 +46,8 @@ def shutdown_steam(install: SteamInstall) -> None:
             "Is it on your PATH? Close Steam manually and retry."
         ) from exc
 
-    deadline = time.monotonic() + SHUTDOWN_TIMEOUT_S
+    started = time.monotonic()
+    deadline = started + SHUTDOWN_TIMEOUT_S
     with console.status("[bold yellow]Waiting for Steam to shut down…", spinner="dots"):
         while steam_is_running():
             if time.monotonic() >= deadline:
@@ -54,9 +57,18 @@ def shutdown_steam(install: SteamInstall) -> None:
                     "Close Steam manually and retry."
                 )
             time.sleep(SHUTDOWN_POLL_S)
+    debug(f"no process named 'steam' after {time.monotonic() - started:.1f}s")
+
+    if is_verbose():
+        leftover = subprocess.run(
+            ["pgrep", "-a", "steam"], capture_output=True, text=True
+        ).stdout.strip()
+        if leftover:
+            debug(f"steam-related processes still alive:\n{leftover}")
 
 
 def launch_steam(install: SteamInstall) -> bool:
+    debug(f"launching steam: {' '.join(install.launch_cmd)}")
     try:
         subprocess.Popen(
             install.launch_cmd,
@@ -90,6 +102,7 @@ def write_login_users(install: SteamInstall, login: LoginUsers, target: Account)
         if is_target:
             ci_set(block, "AllowAutoLogin", "1")
             ci_set(block, "RememberPassword", "1")
+    debug(f"writing {install.loginusers} (MostRecent -> {target.steamid64})")
     _atomic_write_vdf(install.loginusers, login.data)
 
 
@@ -114,4 +127,5 @@ def write_registry(install: SteamInstall, target: Account) -> None:
 
     ci_set(node, "AutoLoginUser", target.account_name)
     ci_set(node, "RememberPassword", "1")
+    debug(f"writing {install.registry} (AutoLoginUser -> {target.account_name})")
     _atomic_write_vdf(install.registry, data)
