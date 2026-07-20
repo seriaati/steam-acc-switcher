@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import vdf
 
@@ -13,7 +13,7 @@ from sas.accounts import Account, LoginUsers
 from sas.console import console, debug, is_verbose
 from sas.errors import SteamError
 from sas.install import SteamInstall
-from sas.vdf_utils import ci_lookup, ci_set
+from sas.vdf_utils import ci_get, ci_lookup, ci_set
 
 SHUTDOWN_TIMEOUT_S = 30.0
 SHUTDOWN_POLL_S = 0.5
@@ -129,3 +129,32 @@ def write_registry(install: SteamInstall, target: Account) -> None:
     ci_set(node, "RememberPassword", "1")
     debug(f"writing {install.registry} (AutoLoginUser -> {target.account_name})")
     _atomic_write_vdf(install.registry, data)
+
+
+def _read_autologin(registry: Path) -> Optional[str]:
+    try:
+        data = vdf.loads(registry.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    node: Any = data
+    for level in ("Registry", "HKCU", "Software", "Valve", "Steam"):
+        actual = ci_lookup(node, level)
+        if actual is None or not isinstance(node[actual], dict):
+            return None
+        node = node[actual]
+    return ci_get(node, "AutoLoginUser")
+
+
+def watch_registry_autologin(install: SteamInstall, duration_s: float = 15.0) -> None:
+    """Verbose-only: watch AutoLoginUser after relaunch to catch Steam clobbering it."""
+    if not is_verbose():
+        return
+    debug(f"watching AutoLoginUser in {install.registry} for {duration_s:.0f}s…")
+    started = time.monotonic()
+    last: object = object()
+    while time.monotonic() - started < duration_s:
+        value = _read_autologin(install.registry)
+        if value != last:
+            debug(f"AutoLoginUser is {value!r} at +{time.monotonic() - started:.1f}s")
+            last = value
+        time.sleep(0.5)

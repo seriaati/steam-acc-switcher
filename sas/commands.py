@@ -12,6 +12,7 @@ from sas.steam import (
     launch_steam,
     shutdown_steam,
     steam_is_running,
+    watch_registry_autologin,
     write_login_users,
     write_registry,
 )
@@ -57,6 +58,9 @@ def perform_switch(install: SteamInstall, login: LoginUsers, target: Account, *,
             expand=False,
         )
     )
+
+    if relaunched:
+        watch_registry_autologin(install)
 
 
 def run(install: SteamInstall, login: LoginUsers, args: argparse.Namespace) -> None:
