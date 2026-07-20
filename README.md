@@ -54,6 +54,10 @@ pip install .
 
 ## Usage
 
+Make sure "Ask which account to use each time Steam starts" is unchecked in Steam's settings, otherwise it will override the switcher. You can see it when you click your username, then "Change account...".
+
+![Steam's prompt for changing accounts](change-account-prompt.png)
+
 ```bash
 # Run with no arguments for the interactive picker. Your saved accounts are
 # listed (active one starred), use ↑/↓ to move, Enter to switch, q to cancel.
