@@ -20,7 +20,7 @@ from sas.nicknames import save_nickname
 
 
 def _ordered(accounts: list[Account]) -> list[Account]:
-    return sorted(accounts, key=lambda a: (not a.most_recent, a.account_name.lower()))
+    return sorted(accounts, key=lambda a: a.timestamp, reverse=True)
 
 
 def _menu(

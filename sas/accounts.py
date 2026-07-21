@@ -20,6 +20,7 @@ class Account:
     account_name: str
     persona_name: str
     most_recent: bool
+    timestamp: int = 0
     nickname: Optional[str] = None
     online_state: Optional[str] = None
     vac_banned: Optional[bool] = None
@@ -70,6 +71,7 @@ def load_login_users(path: Path) -> LoginUsers:
                 account_name=str(ci_get(block, "AccountName", "")),
                 persona_name=str(ci_get(block, "PersonaName", "")),
                 most_recent=str(ci_get(block, "MostRecent", "0")) == "1",
+                timestamp=int(str(ci_get(block, "Timestamp", "0")) or 0),
             )
         )
     if not accounts:
